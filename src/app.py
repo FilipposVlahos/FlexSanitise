@@ -1,19 +1,30 @@
 from common_components import DocumentRetrieval
-from regex_sanitizations import RegexSanitization
+from allennlp_answerer import PythonPredictor
 
 import os
 
-print (os.getcwd())
-
-regex_sanitiser = RegexSanitization()
-documt_retriever = DocumentRetrieval()
+document_retriever = DocumentRetrieval()
+answerer = PythonPredictor()
 
 def main():
-    doc = documt_retriever.get_document()
-    san_text = regex_sanitiser. sanitise_dates(doc)
-    san_text = regex_sanitiser. sanitise_days(san_text)
-    san_text = regex_sanitiser. sanitise_months(san_text)
-    san_text = regex_sanitiser. sanitise_email_addresses(san_text)
-    print(san_text)
+    answers = []
+    original_text = document_retriever.get_document()
+    with open("data_set/QuestionsForSanitisation.txt") as questions:
+        for question in questions:
+            print(question, end='')
+            # find answer to question
+            answer = answerer.predict(original_text, question)
+            print(answer["answer"])
+            print()
+            answers.append(answer["answer"])
+    
+    # replace
+    sanitised_text = original_text
+    for answer in answers:
+        sanitised_text = sanitised_text.replace(answer, "[Sensitive Information]")
+
+    f = open("results/sanitised_documet.txt", "w")
+    f.write(sanitised_text)
+    f.close()
 
 main()
