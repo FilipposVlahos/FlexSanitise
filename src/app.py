@@ -1,9 +1,12 @@
 from flask import Flask, jsonify, abort, request, make_response, url_for
+from flask_cors import CORS
+
 import os
 
 from allennlp_answerer import PythonPredictor
 
 app = Flask(__name__)
+cors = CORS(app)
 
 answerer = PythonPredictor()
 
@@ -13,6 +16,8 @@ def create_task():
         abort(400)
     document = request.json["document"]
     questions = request.json["questions"]
+    print(document)
+    print(questions)
     return jsonify({'sanitisedDocument': sanitise_document(document, questions)})
 
 
