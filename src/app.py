@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, abort, request, make_response, url_for
 from flask_cors import CORS
-
+import json
 import os
 
 from allennlp_answerer import PythonPredictor
@@ -16,25 +16,25 @@ def create_task():
         abort(400)
     document = request.json["document"]
     questions = request.json["questions"]
-    print(document)
-    print(questions)
+    print("Document", document)
+    print("Questions:", questions)
     return jsonify({'sanitisedDocument': sanitise_document(document, questions)})
 
 
 def sanitise_document(document, questions):
     answers = []
-    original_text = document
-    
-    for question in questions:
-        print(question, end='')
+    questions = json.loads(questions)
+
+    for question in questions["questions"]:
+        print("Question", ": ", question)
         # find answer to question
-        answer = answerer.predict(original_text, question)
-        print(answer["answer"])
+        answer = answerer.predict(document, question)
+        print("Answer ", ": ", answer["answer"])
         print()
         answers.append(answer["answer"])
     
     # replace
-    sanitised_text = original_text
+    sanitised_text = document
     for answer in answers:
         sanitised_text = sanitised_text.replace(answer, "[Sensitive Information]")
 
