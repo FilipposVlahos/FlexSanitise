@@ -1,30 +1,44 @@
-from common_components import DocumentRetrieval
-from allennlp_answerer import PythonPredictor
-
+from flask import Flask, jsonify, abort, request, make_response, url_for
+from flask_cors import CORS
+import json
 import os
 
-document_retriever = DocumentRetrieval()
+from allennlp_answerer import PythonPredictor
+
+app = Flask(__name__)
+cors = CORS(app)
+
 answerer = PythonPredictor()
 
-def main():
+@app.route('/document', methods=['POST'])
+def create_task():
+    if not request.json or not "document" or not "questions" in request.json:
+        abort(400)
+    document = request.json["document"]
+    questions = request.json["questions"]
+    print("Document", document)
+    print("Questions:", questions)
+    return jsonify({'sanitisedDocument': sanitise_document(document, questions)})
+
+
+def sanitise_document(document, questions):
     answers = []
-    original_text = document_retriever.get_document()
-    with open("data_set/QuestionsForSanitisation.txt") as questions:
-        for question in questions:
-            print(question, end='')
-            # find answer to question
-            answer = answerer.predict(original_text, question)
-            print(answer["answer"])
-            print()
-            answers.append(answer["answer"])
+    questions = json.loads(questions)
+
+    for question in questions["questions"]:
+        print("Question", ": ", question)
+        # find answer to question
+        answer = answerer.predict(document, question)
+        print("Answer ", ": ", answer["answer"])
+        print()
+        answers.append(answer["answer"])
     
     # replace
-    sanitised_text = original_text
+    sanitised_text = document
     for answer in answers:
         sanitised_text = sanitised_text.replace(answer, "[Sensitive Information]")
 
-    f = open("results/sanitised_documet.txt", "w")
-    f.write(sanitised_text)
-    f.close()
+    return sanitised_text
 
-main()
+if __name__ == '__main__':
+    app.run()
