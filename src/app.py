@@ -4,24 +4,40 @@ import json
 import os
 
 from allennlp_answerer import PythonPredictor
+from regex_sanitizations import RegexSanitization
 
 app = Flask(__name__)
 cors = CORS(app)
 
 answerer = PythonPredictor()
+regex_sanitiser = RegexSanitization()
 
 @app.route('/document', methods=['POST'])
 def create_task():
-    if not request.json or not "document" or not "questions" in request.json:
+    if not request.json or not "document" or not "questions" or not "regex" in request.json:
         abort(400)
     document = request.json["document"]
     questions = request.json["questions"]
-    print("Document", document)
+    regex = request.json["regex"]
+    print("Document:", document)
     print("Questions:", questions)
-    return jsonify({'sanitisedDocument': sanitise_document(document, questions)})
+    print("Regex:", regex)
+    document = sanitise_document_regex(document, regex)
+    return jsonify({'sanitisedDocument': sanitise_document_qa(document, questions)})
 
+def sanitise_document_regex(document, regex):
+    result = document
+    if ("dates" in regex):
+        result = regex_sanitiser.sanitise_dates(result)
+    elif ("days" in regex):
+        result = regex_sanitiser.sanitise_days(result)
+    elif ("months" in regex):
+        result = regex_sanitiser.sanitise_months(result)
+    elif ("emails" in regex):
+        result = regex_sanitiser.sanitise_email_addresses(result)
+    return result
 
-def sanitise_document(document, questions):
+def sanitise_document_qa(document, questions):
     answers = []
     questions = json.loads(questions)
 
