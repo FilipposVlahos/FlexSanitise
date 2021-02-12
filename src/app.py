@@ -29,11 +29,11 @@ def sanitise_document_regex(document, regex):
     result = document
     if ("dates" in regex):
         result = regex_sanitiser.sanitise_dates(result)
-    elif ("days" in regex):
+    if ("days" in regex):
         result = regex_sanitiser.sanitise_days(result)
-    elif ("months" in regex):
+    if ("months" in regex):
         result = regex_sanitiser.sanitise_months(result)
-    elif ("emails" in regex):
+    if ("emails" in regex):
         result = regex_sanitiser.sanitise_email_addresses(result)
     return result
 
