@@ -4,7 +4,7 @@ import json
 import os
 import multiprocessing as mp
 from multiprocessing import Process, Queue
-
+import time 
 from allennlp_answerer import PythonPredictor
 from regex_sanitizations import RegexSanitization
 
@@ -45,17 +45,19 @@ answerQueue = Queue()
 def worker(document):
     while not questQueue.empty():
         question = questQueue.get()
-        print("Question ", "question")
-        answerQueue.put(answerer.predict(document, question))
+        answer = answerer.predict(document, question)
+        print("Question: ", question, "- Answer: ", answer)
+        answerQueue.put(answer)
 
 def sanitise_document_qa(document, questions):
+    start_time = time.time()
     questions = json.loads(questions)
     for question in questions["questions"]:
         questQueue.put(question)
 
     nu_of_cpus = mp.cpu_count()
     p = []
-    for i in range(nu_of_cpus):
+    for i in range(min(nu_of_cpus, len(questions["questions"]))):
         process = Process(target=worker, args=(document,))
         p.append(process)
         process.start()
@@ -68,6 +70,7 @@ def sanitise_document_qa(document, questions):
     while not answerQueue.empty():
         sanitised_text = sanitised_text.replace(answerQueue.get(), "[Sensitive Information]")
 
+    print("--- %s seconds ---" % (time.time() - start_time))
     return sanitised_text
 
 if __name__ == '__main__':
