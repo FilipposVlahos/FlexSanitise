@@ -25,7 +25,8 @@ def create_task():
     print("Questions:", questions)
     print("Regex:", regex)
     document = sanitise_document_regex(document, regex)
-    return jsonify({'sanitisedDocument': sanitise_document_qa(document, questions)})
+    sanitise_document_qa(document, questions)
+    return reply(document)
 
 def sanitise_document_regex(document, regex):
     result = document
@@ -64,14 +65,18 @@ def sanitise_document_qa(document, questions):
 
     for process in p: 
         process.join()
-
-    # replace
-    sanitised_text = document
-    while not answerQueue.empty():
-        sanitised_text = sanitised_text.replace(answerQueue.get(), "[Sensitive Information]")
-
     print("--- %s seconds ---" % (time.time() - start_time))
-    return sanitised_text
+
+def reply(document):
+    # replace
+    sanitised_document = document
+    highlighted_document = document
+    while not answerQueue.empty():
+        answer = answerQueue.get()
+        sanitised_document = sanitised_document.replace(answer, "[Sensitive Information]")
+        highlighted_document = highlighted_document.replace(answer, "<span style=\"background-color: #FFFF00\">" + answer + "</span>")
+    
+    return jsonify(sanitisedDocument = sanitised_document, highlightedDocument=highlighted_document)
 
 if __name__ == '__main__':
     app.run()
