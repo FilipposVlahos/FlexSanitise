@@ -2,6 +2,7 @@ from flask import Flask, jsonify, abort, request, make_response, url_for
 from flask_cors import CORS
 import json
 import os
+import time
 
 from allennlp_answerer import PythonPredictor
 from regex_sanitizations import RegexSanitization
@@ -38,6 +39,7 @@ def sanitise_document_regex(document, regex):
     return result
 
 def sanitise_document_qa(document, questions):
+    start_time = time.time()
     answers = []
     questions = json.loads(questions)
 
@@ -48,7 +50,8 @@ def sanitise_document_qa(document, questions):
         print("Answer ", ": ", answer["answer"])
         print()
         answers.append(answer["answer"])
-    
+    print("--- %s seconds ---" % (time.time() - start_time))
+
     # replace
     sanitised_text = document
     for answer in answers:
