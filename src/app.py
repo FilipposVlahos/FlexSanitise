@@ -2,13 +2,13 @@ from flask import Flask, jsonify, abort, request, make_response, url_for
 from flask_cors import CORS
 import os
 
-from regex_sanitizations import RegexSanitization
+from regex_sanitisations import RegexSanitisation
 from qa_sanitiser import QASanitiser
 
 app = Flask(__name__)
 cors = CORS(app)
 
-regex_sanitiser = RegexSanitization()
+regex_sanitiser = RegexSanitisation()
 qa_sanitiser = QASanitiser()
 
 @app.route('/document', methods=['POST'])
