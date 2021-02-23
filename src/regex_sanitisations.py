@@ -46,5 +46,10 @@ class RegexSanitisation:
         highlighted_document = document
         print(matches)
         for match in matches:
-            highlighted_document = highlighted_document.replace(match, "<span style=\"background-color: orange\">" + match + "</span>")
+            if type(match) is tuple:
+                for a_match in match:
+                    if a_match != "":
+                        highlighted_document = highlighted_document.replace(a_match, "<span style=\"background-color: orange\">" + a_match + "</span>")
+            else: 
+                highlighted_document = highlighted_document.replace(match, "<span style=\"background-color: orange\">" + match + "</span>")
         return highlighted_document
