@@ -16,7 +16,6 @@
 ```
 
 ### POST Request: /ner
-### POST Request: /document
 ```json:
 {
     document: ""
