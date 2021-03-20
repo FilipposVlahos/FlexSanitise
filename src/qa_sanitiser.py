@@ -1,7 +1,6 @@
 from multiprocessing import Process, Queue
 import multiprocessing as mp
-import time
-import json
+import time, json
 
 from allennlp_answerer import PythonPredictor
 
@@ -11,10 +10,9 @@ class QASanitiser:
         self.answerQueue = Queue()
         self.answerer = PythonPredictor()
 
-    
     def sanitise_qa(self, documents, questions):
-        sanitised_document = documents["docToSanitise"]
-        highlighted_document = documents["docToHighlight"]
+        sanitised_document = documents["sanitisedDocument"]
+        highlighted_document = documents["highlightedDocument"]
         self.schedule_qa(sanitised_document, questions)
         
         while not self.answerQueue.empty():
