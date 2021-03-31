@@ -3,7 +3,7 @@ import en_core_web_trf
 
 class NamedEntityRecogniser:
     def __init__(self):
-        self.nlp = en_core_web_trf.load()
+        self.nlp = en_core_web_trf.load(exclude=["lemmatizer", "token"])
 
     def getNamedEntities(self, document):
         doc = self.nlp(document)
@@ -22,5 +22,5 @@ class NamedEntityRecogniser:
         highlighted_document = documents["highlightedDocument"]
         for named_entity, label in ner:
             document_without_ne = document_without_ne.replace(named_entity, "[" + label + "]")
-            highlighted_document = highlighted_document.replace(named_entity,  "<span style=\"background-color: yellow\">" + named_entity + "</span>")
+            highlighted_document = highlighted_document.replace(named_entity,  "<span style=\"background-color:MediumSeaGreen\">" + named_entity + "</span>")
         return ({"sanitisedDocument": document_without_ne, "highlightedDocument": highlighted_document})
