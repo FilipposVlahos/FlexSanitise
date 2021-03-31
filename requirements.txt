@@ -1,5 +1,4 @@
 flask
 flask_cors
 allennlp
-multiprocessing==0.6.0
 spacy
