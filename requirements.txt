@@ -2,3 +2,4 @@ flask
 flask_cors
 allennlp
 spacy
+allennlp_models
