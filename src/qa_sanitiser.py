@@ -18,7 +18,7 @@ class QASanitiser:
         while not self.answerQueue.empty():
             answer = self.answerQueue.get()
             sanitised_document = sanitised_document.replace(answer, "[Sensitive Information]")
-            highlighted_document = highlighted_document.replace(answer, "<span style=\"background-color: yellow\">" + answer + "</span>")
+            highlighted_document = highlighted_document.replace(answer, "<span style=\"background-color: Cyan\">" + answer + "</span>")
         return {"sanitisedDocument":sanitised_document, "highlightedDocument":highlighted_document}
 
     def schedule_qa(self, document, questions):
