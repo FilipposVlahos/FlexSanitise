@@ -1,6 +1,18 @@
 # Document Sanitisation Tool
 
+## To install dependencies:
+
+Install dependencies from requirements.txt by running
+
+```pip install -r requirements.txt ```
+
+Then install the pre-trained transformers model from spaCy by running
+```python -m spacy download en_core_web_trf```
+
+
 ## To run:
+
+Go to src directory and run:
 
 ```flask run```
 
