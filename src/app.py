@@ -16,11 +16,13 @@ named_entity_recogniser = NamedEntityRecogniser()
 @app.route('/document', methods=['POST'])
 def sanitise():
     '''
-        Takes a document and returns a sanitised document and a highlighted document
+        Takes a document and the sanitisation configurations and returns its sanitised version and its original version but with
+        sensitive information being highlighted with html.
+        Required JSON parameters:
             document: The document to be sanitised
             questions: List of questions the answers of which will be sanitised from the document
-            regex: List containing types of structured data to be sanitised. For more info look in regex_sanitisations.py
-            ner: List of lists containing of the form [named_entity, label]. Wherever named_entity appears in document replace it with label
+            regex: List containing one or more of the available regex labels e.g. ["dates", "emails"]
+            ner: List of lists of the form [named_entity, label]. Wherever named_entity appears in document replace it with label
     '''
     if not request.json or not "document" or not "questions" or not "regex" or not "ner" in request.json:
         abort(400)
@@ -36,7 +38,8 @@ def sanitise():
 @app.route('/ner', methods=['POST'])
 def ner():
     '''
-        Takes a document and returns list of lists of the form [named_entity, label]
+        Takes a document and returns all the named entities found in a list of lists of the form [named_entity, label]
+        Required JSON parameters:
             document: Document from which named entities will be recognised
     '''
     if not request.json or not "document" in request.json:
@@ -47,7 +50,7 @@ def ner():
 
 def highlight_sanitised_document(docs):
     '''
-        Highlights text in brackets within the sanitisedDocument 
+        Highlights text in brackets within sanitisedDocument using html
     '''
     sanitised_doc = docs["sanitisedDocument"]
     sanitisedDocument = re.sub(
